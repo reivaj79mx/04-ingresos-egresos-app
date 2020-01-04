@@ -3,6 +3,7 @@ import { User } from './user.model';
 
 
 export const SET_USER = "[Auth] Set user";
+export const UNSET_USER = "[Auth] unset user";
 
 export class SetUserAction implements Action {
   readonly type = SET_USER;
@@ -10,4 +11,8 @@ export class SetUserAction implements Action {
   constructor(public user: User) {}
 }
 
-export type AuthActions = SetUserAction;
+export class UnsetUserAction implements Action {
+  readonly type = UNSET_USER;
+}
+
+export type AuthActions = SetUserAction | UnsetUserAction; 

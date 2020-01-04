@@ -9,8 +9,9 @@ import { User } from './user.model';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Store } from '@ngrx/store';
 import { AppState } from '../app.reducers';
-import { SetUserAction } from './auth.actions';
+import { SetUserAction, UnsetUserAction } from './auth.actions';
 import { Subscription } from 'rxjs';
+import { UnsetItemsAction } from '../ingreso-egreso/ingreso-egreso.actions';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ import { Subscription } from 'rxjs';
 export class AuthService {
 
   private subscription: Subscription = new Subscription();
+  private usuario: User;
 
   constructor(private _angularFireAuth: AngularFireAuth,
     private _router: Router,
@@ -32,11 +34,17 @@ export class AuthService {
             .subscribe((usr: any) => {
               const newUser = new User(usr);
               this._store.dispatch(new SetUserAction(newUser));
+              this.usuario = newUser;
             })
         } else {
           this.subscription.unsubscribe();
+          this.usuario = null;
         }
       });
+  }
+
+  getUsuario() {
+    return { ...this.usuario };
   }
 
   crearUsuario(email: string, nombre: string, password: string) {
@@ -82,6 +90,7 @@ export class AuthService {
     this._angularFireAuth.auth.signOut()
       .then(() => {
         this._router.navigate(['/login']);
+        this._store.dispatch(new UnsetUserAction());
       });
   }
 
